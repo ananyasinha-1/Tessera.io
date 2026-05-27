@@ -1,0 +1,28 @@
+{
+  "name": "@tessera/sync-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "lint": "echo 'lint not configured yet'"
+  },
+  "dependencies": {
+    "@tessera/shared-types": "*",
+    "@tessera/collaboration": "*",
+    "express": "^5.1.0",
+    "socket.io": "^4.8.0",
+    "yjs": "^13.6.0",
+    "y-protocols": "^1.0.6",
+    "lib0": "^0.2.99"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0"
+  }
+}

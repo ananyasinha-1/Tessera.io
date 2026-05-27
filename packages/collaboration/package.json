@@ -1,0 +1,30 @@
+{
+  "name": "@tessera/collaboration",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "dev": "tsc --project tsconfig.build.json --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "lint": "echo 'lint not configured yet'"
+  },
+  "dependencies": {
+    "@tessera/shared-types": "*",
+    "yjs": "^13.6.0",
+    "y-protocols": "^1.0.6",
+    "lib0": "^0.2.99"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}
