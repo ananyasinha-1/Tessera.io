@@ -1,0 +1,67 @@
+name: DCO Sign-off Check
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  dco:
+    name: DCO Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code (full history)
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # Required to fetch all PR commits for inspection
+
+      - name: Verify DCO Sign-off
+        run: |
+          echo "Verifying Developer Certificate of Origin (DCO) Sign-offs..."
+          
+          # Target all commits in the PR branch relative to the target branch (main)
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          
+          echo "Comparing $BASE_SHA..$HEAD_SHA"
+          
+          FAILED=0
+          
+          # Iterate over each commit in the pull request
+          while read -r commit; do
+            [ -z "$commit" ] && continue
+            
+            # Extract commit message and author info
+            SUBJECT=$(git log -n 1 --format="%s" "$commit")
+            MESSAGE=$(git log -n 1 --format="%B" "$commit")
+            AUTHOR_EMAIL=$(git log -n 1 --format="%ae" "$commit")
+            
+            echo "Inspecting commit: $commit - \"$SUBJECT\""
+            
+            # Check for Signed-off-by line
+            SIG_LINE=$(echo "$MESSAGE" | grep -Fi "Signed-off-by:")
+            
+            if [ -z "$SIG_LINE" ]; then
+              echo "::error::Commit $commit (\"$SUBJECT\") is missing DCO Sign-off!"
+              FAILED=1
+            else
+              echo "  DCO Sign-off found: $SIG_LINE"
+              # Verify if the sign-off contains the author's email or a valid format
+              if ! echo "$SIG_LINE" | grep -q "@"; then
+                echo "::error::DCO Sign-off in commit $commit has an invalid format! Got: '$SIG_LINE'"
+                FAILED=1
+              fi
+            fi
+          done < <(git log --no-merges --format="%H" "$BASE_SHA..$HEAD_SHA")
+          
+          if [ "$FAILED" -ne 0 ]; then
+            echo ""
+            echo "❌ DCO Check Failed!"
+            echo "To fix this, please rebase or amend your commits with Git sign-off:"
+            echo "  1. If it is only the last commit: git commit --amend --signoff"
+            echo "  2. For multiple commits: git rebase --signoff origin/main"
+            echo "Then force-push your branch."
+            exit 1
+          fi
+          
+          echo "✅ All commits have valid DCO Sign-offs!"
