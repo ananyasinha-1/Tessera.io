@@ -23,14 +23,14 @@ jobs:
           COMMENTER: ${{ github.event.comment.user.login }}
         run: |
           # Fetch list of existing assignees
-          ASSIGNEES=$(gh issue view "$ISSUE_NUMBER" --json assignees -q '.assignees[].login')
+          ASSIGNEES=$(gh issue view "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --json assignees -q '.assignees[].login')
 
           if [ -n "$ASSIGNEES" ]; then
             echo "Issue is already assigned to: $ASSIGNEES"
-            gh issue comment "$ISSUE_NUMBER" --body "Hi @$COMMENTER, this issue is already assigned to @$ASSIGNEES. Feel free to browse our other [good first issues](https://github.com/${{ github.repository }}/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)! 😊"
+            gh issue comment "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --body "Hi @$COMMENTER, this issue is already assigned to @$ASSIGNEES. Feel free to browse our other [good first issues](https://github.com/${{ github.repository }}/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)! 😊"
           else
             # Assign the issue to the commenter
-            gh issue edit "$ISSUE_NUMBER" --add-assignee "$COMMENTER"
+            gh issue edit "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --add-assignee "$COMMENTER"
             # Post success confirmation comment
-            gh issue comment "$ISSUE_NUMBER" --body "Hi @$COMMENTER, you have successfully claimed this issue! It has been assigned to you. Happy contributing! 🎉"
+            gh issue comment "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --body "Hi @$COMMENTER, you have successfully claimed this issue! It has been assigned to you. Happy contributing! 🎉"
           fi
