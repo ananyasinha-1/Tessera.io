@@ -1,0 +1,30 @@
+name: Issue Greeting
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  greet:
+    name: Post contribution instructions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Comment on new issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --body \
+          "👋 Thanks for opening this issue!
+
+          ### 🙋 Want to work on this?
+          Comment \`/claim\` below and our bot will automatically assign this issue to you.
+
+          ### 📖 Before you start
+          Please read our [Contributing Guide](https://github.com/${{ github.repository }}/blob/main/CONTRIBUTING.md) for setup instructions, branching conventions, and commit sign-off requirements.
+
+          Happy contributing! 🎉"
